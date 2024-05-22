@@ -1,5 +1,4 @@
 const express = require('express');
-// Import the ApolloServer class
 const { ApolloServer } = require('@apollo/server');
 const { expressMiddleware } = require('@apollo/server/express4');
 
@@ -7,14 +6,10 @@ const { expressMiddleware } = require('@apollo/server/express4');
 const { typeDefs, resolvers } = require('./schemas');
 const db = require('./config/connection');
 
-// Import the authentication middleware
-const { authMiddleware } = require('./utils/auth');
-
 const PORT = process.env.PORT || 3001;
 const server = new ApolloServer({
   typeDefs,
-  resolvers, 
-  context: ({ req }) => authMiddleware(req),
+  resolvers
 });
 
 const app = express();
@@ -26,10 +21,7 @@ const startApolloServer = async () => {
   app.use(express.urlencoded({ extended: false }));
   app.use(express.json());
   
-  // Apply Apollo server middleware with the authMiddleware for context
-  app.use('/graphql', expressMiddleware(server, {
-    context: async ({ req }) => authMiddleware({ req })
-  }));
+  app.use('/graphql', expressMiddleware(server));
 
   db.once('open', () => {
     app.listen(PORT, () => {
