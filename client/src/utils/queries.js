@@ -17,3 +17,15 @@ query me {
     }
 }
 `;
+
+export const SEARCH_GOOGLE_BOOKS = gql`
+  query searchGoogleBooks($query: String!) {
+    searchGoogleBooks(query: $query) {
+      bookId
+      authors
+      description
+      title
+      image
+    }
+  }
+`;
