@@ -1,4 +1,3 @@
-<!-- TO DO: update badges,  -->
 
 # AgQLbookSearchEngine
 A MERN book search engine, originally built with a RESTful API (starter code was provided) - and refactored to be a GraphQL API built with an Apollo server. <br>
@@ -25,24 +24,24 @@ Uses GraphQL queries and mutations to fetch and modify data, the authentication 
   - [Contributing](#contributing)
   - [Tests](#tests)
   - [Questions](#questions)
-  
+
   ## Installation
   ``` 
   npm i  
   ```
-  
+
   ## Usage
   To start the application, click the following link:
   ((link here)) <br><br>
   Alternatively, type the following command in the terminal:&nbsp; **npm start**
-  
+
   ## License
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)<br>
 
   ## Badges
   [![Badge: NPM](https://img.shields.io/npm/v/npm)](https://registry.npmjs.com)<br>
   <!-- [!Badge: Javascript](https://img.shields.io/npm/v/javascript)[]<br> -->
-  
+
   ((css, html, javascript, node.js, npm, render, express.js, mongodb, react))
 
   ## Contributing
