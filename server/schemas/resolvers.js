@@ -3,14 +3,34 @@ const { signToken } = require('../utils/auth');
 const { AuthenticationError } = require('apollo-server-express');
 
 const resolvers = {
+  // Query: {
+  //   me: async (parent, args, context) => {
+  //     if (context.user) {
+  //       return await User.findById(context.user._id).populate('savedBooks');
+  //     }
+  //     throw new AuthenticationError('Not logged in');
+  //   },
+  // },
+
   Query: {
     me: async (parent, args, context) => {
-      if (context.user) {
-        return await User.findById(context.user._id).populate('savedBooks');
+      try {
+        console.log('Query: me resolver called with context:', context);
+
+        if (context.user) {
+          const user = await User.findById(context.user._id).populate('savedBooks');
+          console.log('User found:', user);
+          return user;
+        } else {
+          throw new AuthenticationError('Not logged in');
+        }
+      } catch (error) {
+        console.error('Error in me resolver:', error);
+        throw error;
       }
-      throw new AuthenticationError('Not logged in');
     },
   },
+  
   Mutation: {
     login: async (parent, { email, password }) => {
       const user = await User.findOne({ email });

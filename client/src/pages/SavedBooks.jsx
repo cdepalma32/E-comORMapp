@@ -31,12 +31,24 @@ const SavedBooks = () => {
         variables: { bookId }
       });
 
-      // upon success, remove book's id from localStorage
-      removeBookId(bookId);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  //     // upon success, remove book's id from localStorage
+  //     removeBookId(bookId);
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
+
+  // upon success, remove book's id from localStorage
+  const removed = removeBookId(bookId);
+  if (removed) {
+    console.log(`Book ID: ${bookId} removed from local storage.`);
+  } else {
+    console.warn(`Failed to remove book ID: ${bookId} from local storage.`);
+  }
+} catch (err) {
+  console.error(err);
+}
+};
 
   if (loading) {
     return <h2>LOADING...</h2>;

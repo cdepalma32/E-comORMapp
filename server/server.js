@@ -1,23 +1,22 @@
 const express = require('express');
-// Import the ApolloServer class
 const { ApolloServer } = require('@apollo/server');
 const { expressMiddleware } = require('@apollo/server/express4');
+const path = require('path');
 
-// Import the two parts of a GraphQL schema
-const { typeDefs, resolvers } = require('./schemas');
+const { typeDefs, resolvers } = require('./schemas/');
 const db = require('./config/connection');
 
-// Import the authentication middleware
-const { authMiddleware } = require('./utils/auth');
-
 const PORT = process.env.PORT || 3001;
+const app = express();
+
 const server = new ApolloServer({
   typeDefs,
-  resolvers, 
+  resolvers,
   context: ({ req }) => authMiddleware(req),
+  debug: true, // enable debug mode
 });
 
-const app = express();
+
 
 // Create a new instance of an Apollo server with the GraphQL schema
 const startApolloServer = async () => {
