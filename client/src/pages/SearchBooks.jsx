@@ -1,43 +1,43 @@
 import { useState, useEffect } from 'react';
-import { useQuery, useMutation } from '@apollo/client';
-import { SEARCH_GOOGLE_BOOKS } from '../utils/queries';
+import { useMutation } from '@apollo/client';
 import { SAVE_BOOK } from '../utils/mutations';
 import { Container, Col, Form, Button, Card, Row } from 'react-bootstrap';
 import Auth from '../utils/auth';
 import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
 
 const SearchBooks = () => {
-  // State for holding returned Google API data
   const [searchedBooks, setSearchedBooks] = useState([]);
-  // State for holding our search field data
   const [searchInput, setSearchInput] = useState('');
-
-  // State to hold saved book ID values
   const [savedBookIds, setSavedBookIds] = useState(getSavedBookIds());
 
-  // Set up useEffect hook to save `savedBookIds` list to localStorage on component unmount
   useEffect(() => {
     return () => saveBookIds(savedBookIds);
   }, [savedBookIds]);
 
-  // GraphQL hooks
   const [saveBook] = useMutation(SAVE_BOOK);
-  const { refetch: searchBooks } = useQuery(SEARCH_GOOGLE_BOOKS, {
-    variables: { query: searchInput },
-    skip: true, // Skip the query on component load
-    onCompleted: (data) => {
-      if (data && data.searchGoogleBooks) {
-        setSearchedBooks(data.searchGoogleBooks);
+  const searchGoogleBooks = async (query) => {
+    try {
+      const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${query}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch data from Google Books API');
       }
-    },
-  });
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error searching Google Books API:', error);
+      throw error;
+    }
+  };
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
     if (!searchInput) return;
 
     try {
-      await searchBooks({ query: searchInput });
+      const response = await searchGoogleBooks(searchInput); // Use searchGoogleBooks function
+      console.log('Response:', response);
+      const { items } = response;
+      setSearchedBooks(items || []);
       setSearchInput('');
     } catch (err) {
       console.error(err);
@@ -45,7 +45,7 @@ const SearchBooks = () => {
   };
 
   const handleSaveBook = async (bookId) => {
-    const bookToSave = searchedBooks.find((book) => book.bookId === bookId);
+    const bookToSave = searchedBooks.find((book) => book.id === bookId);
     const token = Auth.loggedIn() ? Auth.getToken() : null;
     if (!token) return false;
 
@@ -94,24 +94,24 @@ const SearchBooks = () => {
             : 'Search for a book to begin'}
         </h2>
         <Row>
-          {searchedBooks.map((book) => {
+          {searchedBooks.map((book, index) => {
             return (
-              <Col md="4" key={book.bookId}>
+              <Col md="4" key={index}>
                 <Card border="dark">
-                  {book.image ? (
-                    <Card.Img src={book.image} alt={`The cover for ${book.title}`} variant="top" />
+                  {book.volumeInfo.imageLinks.thumbnail ? (
+                    <Card.Img src={book.volumeInfo.imageLinks.thumbnail} alt={`The cover for ${book.volumeInfo.title}`} variant="top" />
                   ) : null}
                   <Card.Body>
-                    <Card.Title>{book.title}</Card.Title>
-                    <p className="small">Authors: {book.authors}</p>
-                    <Card.Text>{book.description}</Card.Text>
+                    <Card.Title>{book.volumeInfo.title}</Card.Title>
+                    <p className="small">Authors: {book.volumeInfo.authors}</p>
+                    <Card.Text>{book.searchInfo.textSnippet}</Card.Text>
                     {Auth.loggedIn() && (
                       <Button
-                        disabled={savedBookIds?.some((savedBookId) => savedBookId === book.bookId)}
+                        disabled={savedBookIds?.some((savedBookId) => savedBookId === book.id)}
                         className="btn-block btn-info"
-                        onClick={() => handleSaveBook(book.bookId)}
+                        onClick={() => handleSaveBook(book.id)}
                       >
-                        {savedBookIds?.some((savedBookId) => savedBookId === book.bookId)
+                        {savedBookIds?.some((savedBookId) => savedBookId === book.id)
                           ? 'This book has already been saved!'
                           : 'Save this Book!'}
                       </Button>
