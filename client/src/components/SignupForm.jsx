@@ -4,7 +4,6 @@ import { Form, Button, Alert } from 'react-bootstrap';
 import { ADD_USER } from '../utils/mutations';
 import Auth from '../utils/auth';
 
-// import { createUser } from '../utils/API';
 
 const SignupForm = () => {
   // Set initial form state
@@ -15,43 +14,65 @@ const SignupForm = () => {
   const [showAlert, setShowAlert] = useState(false);
 
   // Initialize the ADD_USER mutation
-  const [addUser, { error }] = useMutation(ADD_USER);
+  const [addUser, { error, data }] = useMutation(ADD_USER);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setUserFormData({ ...userFormData, [name]: value });
   };
 
-  const handleFormSubmit = async (event) => {
-    event.preventDefault();
-
-    // Check if form has everything (as per react-bootstrap docs)
-    const form = event.currentTarget;
-    if (form.checkValidity() === false) {
+    const handleFormSubmit = async (event) => {
       event.preventDefault();
-      event.stopPropagation();
-    }
-
-    setValidated(true);
-
-    try {
-      const { data } = await addUser({
-        variables: { ...userFormData },
+      console.log(userFormData); // trying this out
+    
+      // Check if form has everything (as per react-bootstrap docs)
+      const form = event.currentTarget;
+      if (form.checkValidity() === false) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    
+      setValidated(true);
+    
+      try {
+        const { data } = await addUser({
+          variables: { ...userFormData },
+        });
+    
+        // Log the response data
+        console.log("Response data:", data);
+    
+        // Check if the response contains errors
+        if (data.errors) {
+          throw new Error(data.errors[0].message);
+        }
+    
+        // Check if the response contains the token
+        if (data.addUser.token) {
+          Auth.login(data.addUser.token);
+        } else {
+          throw new Error("Token not found in response data");
+        }
+      } catch (err) {
+        console.error("Error details: ", err);
+        if (err.networkError) {
+          console.error("Network Error: ", err.networkError);
+        }
+        if (err.graphQLErrors) {
+          err.graphQLErrors.forEach(({ message, locations, path }) =>
+            console.error(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`)
+          );
+        }
+        setShowAlert(true);
+      }
+    
+      setUserFormData({
+        username: '',
+        email: '',
+        password: '',
       });
-
-      Auth.login(data.addUser.token);
-    } catch (err) {
-      console.error(err);
-      setShowAlert(true);
-    }
-
-    setUserFormData({
-      username: '',
-      email: '',
-      password: '',
-    });
-  };
-
+    };
+    
   return (
     <>
       {/* This is needed for the validation functionality above */}
