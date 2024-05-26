@@ -1,42 +1,3 @@
-// const jwt = require('jsonwebtoken');
-
-// // set token secret and expiration date
-// const secret = 'mysecretsshhhhh';
-// const expiration = '2h';
-
-// module.exports = {
-//   // function for our authenticated routes
-//   authMiddleware: function (req, res, next) {
-//     // allows token to be sent via  req.query or headers
-//     let token = req.query.token || req.headers.authorization;
-
-//     // ["Bearer", "<tokenvalue>"]
-//     if (req.headers.authorization) {
-//       token = token.split(' ').pop().trim();
-//     }
-
-//     if (!token) {
-//       return res.status(400).json({ message: 'You have no token!' });
-//     }
-
-//     // verify token and get user data out of it
-//     try {
-//       const { data } = jwt.verify(token, secret, { maxAge: expiration });
-//       req.user = data;
-//     } catch {
-//       console.log('Invalid token');
-//       return res.status(400).json({ message: 'invalid token!' });
-//     }
-
-//     // send to next endpoint
-//     next();
-//   },
-//   signToken: function ({ username, email, _id }) {
-//     const payload = { username, email, _id };
-
-//     return jwt.sign({ data: payload }, secret, { expiresIn: expiration });
-//   },
-// };
 const jwt = require('jsonwebtoken');
 
 // set token secret and expiration date
@@ -47,38 +8,49 @@ module.exports = {
   // function for our authenticated routes
   authMiddleware: function (req, res, next) {
     try {
-      // allows token to be sent via req.query or headers
-      let token = req.query.token || req.headers.authorization;
-
-      // ["Bearer", "<tokenvalue>"]
-      if (req.headers.authorization) {
-        token = token.split(' ').pop().trim();
+      let token;
+  
+      // Check if token is in query parameters
+      if (req.query && req.query.token) {
+        token = req.query.token;
+      } else if (req.headers.authorization) {
+        // Check if token is in authorization header
+        const authHeader = req.headers.authorization;
+        const tokenParts = authHeader.split(' ');
+        if (tokenParts.length === 2 && tokenParts[0] === 'Bearer') {
+          token = tokenParts[1];
+        }
       }
-
+  
+      // Check if token is present
       if (!token) {
-        return res.status(400).json({ message: 'You have no token!' });
+        console.error('No token found in request');
+        // If no token is found, simply call next() without sending a response
+        return next();
       }
-
+  
       // verify token and get user data out of it
       const { data } = jwt.verify(token, secret, { maxAge: expiration });
       req.user = data;
-
+  
       // send to next endpoint
       next();
     } catch (error) {
       console.error('Error in authentication middleware:', error);
-      return res.status(400).json({ message: 'Invalid token!' });
+      // If there's an error, call next() without sending a response
+      return next();
     }
   },
+  
   signToken: function ({ username, email, _id }) {
     try {
       const payload = { username, email, _id };
-      return jwt.sign({ data: payload }, secret, { expiresIn: expiration });
+      const token = jwt.sign({ data: payload }, secret, { expiresIn: expiration });
+      console.log('Token signed successfully:', token);
+      return token;
     } catch (error) {
       console.error('Error in token signing:', error);
       throw new Error('Token signing failed');
     }
   },
 };
-
-
