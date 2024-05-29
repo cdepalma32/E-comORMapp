@@ -8,7 +8,9 @@ shown being tested in Insomnia Core.
 
 
 ## Link to video
-  [![Watch the video](https://youtu.be/7_mUXH1leWM)](https://youtu.be/7_mUXH1leWM)
+  [![Video 1 : Creating schema, seeding database](https://youtu.be/lOFaxWTXB7Q)](https://youtu.be/lOFaxWTXB7Q) <br>
+  [![Video 2 : Insomnia testing](https://youtu.be/7_mUXH1leWM)](https://youtu.be/7_mUXH1leWM)
+  
 
 
   ## Description
