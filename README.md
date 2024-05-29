@@ -1,12 +1,14 @@
 
 # AE-comORMapp
 Back end built for an e-commerce site utilizing Express.js API, configured with Sequelize to interact with a MySQL database.
+Starter code was provided for this project.
+In the video below, GET routes for all categories, products and all tags are tested, as well as GET routes to return <br>
+a single category, a single product and a single tag.  POST, PUT and DELETE routes for categories, products and tags are also<br>
+shown being tested in Insomnia Core.
 
-  ## Screenshot
-  ![Screenshot](FILE PATH GOES HERE)
 
 ## Link to video
-  [![Watch the video](LINK GOES HERE)](LINK GOES HERE)
+  [![Watch the video](https://youtu.be/7_mUXH1leWM)](https://youtu.be/7_mUXH1leWM)
 
 
   ## Description
@@ -36,9 +38,6 @@ Back end built for an e-commerce site utilizing Express.js API, configured with 
   ## License
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)<br>
 
-  ## Badges
-  [![Badge: NPM](https://img.shields.io/npm/v/npm)](https://registry.npmjs.com)<br>
-  // update badges //
 
   ## Contributing
   Contact Me

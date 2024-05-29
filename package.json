@@ -15,8 +15,12 @@
     "prettier": "^1.19.1"
   },
   "scripts": {
-    "start": "node server.js"
-  },
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "watch": "nodemon server.js",
+    "seed": "node seeds/index.js"
+    },
+  
   "name": "e-comormapp",
   "description": "Showcases the build for the back end of an e-commerce site. Took a working Express.js API and configured it to use Sequelize to interact with a MySQL database.",
   "version": "1.0.0",
